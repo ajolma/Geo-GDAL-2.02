@@ -77,6 +77,7 @@ if ($gdal_config) {
     } elsif ($my_gdal_version > $found_gdal_version) {
         say STDERR "That's older than what this module was developed against. That's not good.";
         $download = 1;
+        $download = 0 if $ARGV{'--no-version-check'};
     }
 } else {
     $download = 1;

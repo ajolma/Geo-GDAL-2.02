@@ -1,0 +1,34 @@
+# This is the config file for building and testing Geo::GDAL with Travis-ci.org
+
+#sudo: required
+#dist: trusty
+
+os:
+  - linux
+#  - osx
+
+language: perl
+perl:
+  - "5.10"
+
+before_install:
+  - sudo apt-get install libexpat-dev libpq-dev pdl
+#  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable -y
+#  - sudo apt-get update
+#  - sudo apt-get install libgdal-dev # is an older version
+
+install:
+  - cpanm -v --installdeps --notest .
+
+script: "perl Makefile.PL --no-version-check; make test"
+
+branches:
+  only:
+    - master
+
+notifications:
+  recipients:
+    - ari.jolma@gmail.com
+  email:
+    on_success: change
+    on_failure: always

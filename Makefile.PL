@@ -18,17 +18,18 @@ for (@ARGV) {
     } else {
         $ARGV{$_} = 1;
     }
+    $_ = '' if /^--help/;
     $_ = '' if /^--gdal-source-tree/;
     $_ = '' if /^--gdal-config/;
     $_ = '' if /^--no-version-check/;
-    $_ = '' if /^--no-downloads/;
+    $_ = '' if /^--download-gdal-source/;
     print STDERR "Warning: unknown parameter: '$_'.\n" if $_;
 }
 # ... or from the environment
 $ARGV{'--gdal-source-tree'} = $ENV{PERL_GDAL_SOURCE_TREE} if $ENV{PERL_GDAL_SOURCE_TREE};
 $ARGV{'--gdal-config'} = $ENV{PERL_GDAL_CONFIG} if $ENV{PERL_GDAL_CONFIG};
 $ARGV{'--no-version-check'} = 1 if $ENV{PERL_GDAL_NO_VERSION_CHECK};
-$ARGV{'--no-downloads'} = 1 if $ENV{PERL_GDAL_NO_DOWNLOADS};
+$ARGV{'--download-gdal-source'} = $ENV{DOWNLOAD_GDAL_SOURCE} if $ENV{DOWNLOAD_GDAL_SOURCE};
 
 if ($ARGV{'--help'}) {
     print <<end;
@@ -42,17 +43,21 @@ To assign environment variables, specify them as VAR=VALUE.
 
 Control the GDAL that this module is built against:
 
-  --gdal-source-tree=PATH  use PATH as the gdal source
-    the same as environment variable PERL_GDAL_SOURCE_TREE=PATH
+  --gdal-config=PATH Use PATH as the gdal-config. This is the same as
+    setting the environment variable PERL_GDAL_CONFIG to PATH.
 
-  --gdal-config=PATH  use PATH as the gdal-config
-    the same as environment variable PERL_GDAL_CONFIG=PATH
+  --gdal-source-tree=PATH Use the gdal source tree at PATH. This is
+    the same as setting the environment variable PERL_GDAL_SOURCE_TREE
+    to PATH.
 
-  --no-version-check  allow building against GDAL with different version
-    the same as setting environment variable PERL_GDAL_NO_VERSION_CHECK=1
+  --download-gdal-source=yes|no|force What to do if suitable GDAL
+    development files are not found. yes is the default. This is the
+    same as setting environment variable
+    PERL_GDAL_DOWNLOAD_GDAL_SOURCE to yes, no, or force.
 
-  --no-downloads      disable fetching GDAL source code as a last resort
-    the same as setting environment variable PERL_GDAL_NO_DOWNLOADS=1
+  --no-version-check Force an attempt to build against an older GDAL
+    version. This is the same as setting the environment variable
+    PERL_GDAL_NO_VERSION_CHECK to 1
 
 More information is available at ExtUtils-MakeMaker documentation.
 
@@ -60,9 +65,12 @@ end
 exit;
 }
 
-my ($source_tree, $gdal_config) = find_gdal_config($ARGV{'--gdal-source-tree'}, $ARGV{'--gdal-config'});
+my $download = $ARGV{'--download-gdal-source'} || 'yes';
+my ($source_tree, $gdal_config);
+unless ($download eq 'force') {
+    ($source_tree, $gdal_config) = find_gdal_config($ARGV{'--gdal-source-tree'}, $ARGV{'--gdal-config'});
+}
 
-my $download;
 my @found_gdal_version;
 my $found_gdal_version;
 if ($gdal_config) {
@@ -76,14 +84,14 @@ if ($gdal_config) {
         say STDERR "That's newer than what this module was developed against. All should be well.";
     } elsif ($my_gdal_version > $found_gdal_version) {
         say STDERR "That's older than what this module was developed against. That's not good.";
-        $download = 1;
+        $download = 1 unless $download eq 'no';
         $download = 0 if $ARGV{'--no-version-check'};
     }
 } else {
     $download = 1;
 }
 
-if ($download && !$ARGV{'--no-downloads'}) {
+if ($download) {
     print <<end;
     
 Either GDAL development files were not found or they are too old for
@@ -203,7 +211,8 @@ sub find_gdal_config {
     if ($source_tree) {
         $gdal_config = "$source_tree/apps/gdal-config";
         die "There is no gdal-config in '$source_tree'.\n".
-            "You have to first say \"cd $source_tree; make\"." unless -r $gdal_config;
+            "If that really is a GDAL source directory, do a make there first.\n" 
+            unless -r $gdal_config;
     }
     if ($gdal_config) {
         unless (-r $gdal_config) {

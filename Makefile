@@ -31,7 +31,3 @@ clean:
 	-rm -rf blib
 	-rm -f pm_to_blib
 	-rm -f Makefile_Geo__GDAL Makefile_Geo__GDAL__Const Makefile_Geo__OGR Makefile_Geo__OSR Makefile_Geo__GNM
-
-veryclean: clean
-	-rm -f *wrap*
-	-rm -f gdal.pm gdalconst.pm osr.pm ogr.pm

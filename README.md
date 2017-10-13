@@ -21,9 +21,7 @@ INSTALLATION FROM CPAN DISTRIBUTION
 When this module is installed from a CPAN distribution, it must first
 find GDAL development files. That is basically about finding the
 gdal-config script. You can specify gdal-config or you can let
-Makefile.PL search for it. However, this module is usually very
-specific about the version of the GDAL it can be built against. The
-branch needs to be the same.
+Makefile.PL search for it.
 
 If gdal-config was not found or its version is not good and
 Makefile.PL had to look it by itself, Makefile.PL will try to download
@@ -31,14 +29,21 @@ and build GDAL. That is mostly meant for automatic testing only.
 
 Control the GDAL that this module is built against:
 
-  --gdal-config=PATH  use PATH as the gdal-config
-    the same as environment variable PERL_GDAL_CONFIG=PATH
+  --gdal-config=PATH Use PATH as the gdal-config. This is the same as
+    setting the environment variable PERL_GDAL_CONFIG to PATH.
 
-  --no-version-check  allow building against GDAL with different version
-    the same as setting environment variable PERL_GDAL_NO_VERSION_CHECK=1
+  --gdal-source-tree=PATH Use the gdal source tree at PATH. This is
+    the same as setting the environment variable PERL_GDAL_SOURCE_TREE
+    to PATH.
 
-  --no-downloads      disable fetching GDAL source code as a last resort
-    the same as setting environment variable PERL_GDAL_NO_DOWNLOADS=1
+  --download-gdal-source=yes|no|force What to do if suitable GDAL
+    development files are not found. yes is the default. This is the
+    same as setting environment variable
+    PERL_GDAL_DOWNLOAD_GDAL_SOURCE to yes, no, or force.
+
+  --no-version-check Force an attempt to build against an older GDAL
+    version. This is the same as setting the environment variable
+    PERL_GDAL_NO_VERSION_CHECK to 1
 
 More information about running Makefile.PL is available at
 ExtUtils-MakeMaker documentation.

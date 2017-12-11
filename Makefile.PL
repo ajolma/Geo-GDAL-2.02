@@ -47,9 +47,7 @@ for my $module (sort keys %$objects) {
         OBJECT => $objects->{$module},
         PM => $PM,
         CONFIGURE_REQUIRES => {
-            'Alien::Base' => 0,
-            'Alien::gdal' => 0,
-            'ExtUtils::MakeMaker' => 0
+            'Alien::gdal' => 0
         },
         BUILD_REQUIRES => {
         },

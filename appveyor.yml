@@ -20,8 +20,9 @@ install:
   - cpanm --quiet Test::CChecker
   - cpanm --quiet Alien::MSYS
   # install alien gdal
-  - svn co https://github.com/ajolma/perl-alien-gdal.git/trunk alien-gdal
+  - svn co https://github.com/shawnlaffan/perl-alien-gdal.git/trunk alien-gdal
   - cd alien-gdal
+  - SET FORCE_DYNAMIC=1
   - perl Makefile.PL
   - gmake | perl -ane "$|=1;print '.'"
   - gmake install
@@ -32,5 +33,6 @@ install:
 build_script:
   - perl Makefile.PL
   - gmake
+  - gmake test
   #- prove -l
 

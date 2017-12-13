@@ -19,8 +19,14 @@ before_install:
   - cpanm HTTP::Tiny
   - cpanm PkgConfig
   - cpanm Sort::Versions
-#  - cpanm https://github.com/shawnlaffan/perl-alien-gdal.git
-  - svn co https://github.com/ajolma/perl-alien-gdal.git/trunk alien-gdal; cd alien-gdal; perl Makefile.PL; make 2>&1 | perl -ane '$|=1;print "."'; make install; cd ..; rm -rf alien-gdal
+  - svn co https://github.com/shawnlaffan/perl-alien-gdal.git/trunk alien-gdal
+  - cd alien-gdal
+  - export FORCE_DYNAMIC=1
+  - perl Makefile.PL
+  - make 2>&1 | perl -ane '$|=1;print "."'
+  - make install
+  - cd ..
+  - rm -rf alien-gdal
 
 install:
   - cpanm -v --installdeps --notest .

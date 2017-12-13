@@ -19,7 +19,14 @@ install:
   - cpanm --quiet HTML::LinkExtor
   - cpanm --quiet Test::CChecker
   - cpanm --quiet Alien::MSYS
-  - svn co https://github.com/ajolma/perl-alien-gdal.git/trunk alien-gdal; cd alien-gdal; perl Makefile.PL; gmake | perl -ane '$|=1;print "."'; gmake install; cd ..; rd /s /q alien-gdal
+  # install alien gdal
+  - svn co https://github.com/ajolma/perl-alien-gdal.git/trunk alien-gdal
+  - cd alien-gdal
+  - perl Makefile.PL
+  - gmake | perl -ane '$|=1;print "."'
+  - gmake install
+  - cd ..
+  - rd /s /q alien-gdal
   - gcc -v
 
 build_script:

@@ -15,10 +15,11 @@ install:
 #  - dir c:\
 #  - dir c:\projects
   #  ensure we have some packages that aren't picked up by the install system
-  - cpanm --quiet Alien::Build
-  - cpanm --quiet HTML::LinkExtor
-  - cpanm --quiet Test::CChecker
-  - cpanm --quiet Alien::MSYS
+  - cpanm --quiet --notest Alien::Build
+  - cpanm --quiet --notest HTML::LinkExtor
+  - cpanm --quiet --notest Test::CChecker
+  - cpanm --quiet --notest Alien::MSYS
+  - cpanm --quiet --notest Alien::patch
   # install alien gdal
   - svn co https://github.com/shawnlaffan/perl-alien-gdal.git/trunk alien-gdal
   - cd alien-gdal

@@ -23,7 +23,7 @@ before_install:
   - cd alien-gdal
   - export FORCE_DYNAMIC=1
   - perl Makefile.PL
-  - make 2>&1 | perl -ane '$|=1;print "."'
+  - make | perl -ane '$|=1;print "."'
   - make install
   - cd ..
   - rm -rf alien-gdal

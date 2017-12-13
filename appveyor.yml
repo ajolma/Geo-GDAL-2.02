@@ -10,7 +10,7 @@ install:
   - if not exist "C:\strawberry" choco install strawberryperl --version 5.26.1.1
   - set ST=C:\strawberry
   - set PATH=%ST%\perl\bin;%ST%\perl\site\bin;%ST%\c\bin;%PATH%
-  - cd C:\projects\%APPVEYOR_PROJECT_NAME%
+  - cd Geo-GDAL-2.02
   #  ensure we have some packages that aren't picked up by the install system
   - cpanm --quiet Alien::Build
   - cpanm --quiet HTML::LinkExtor

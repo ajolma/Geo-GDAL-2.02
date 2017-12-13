@@ -23,7 +23,7 @@ install:
   - svn co https://github.com/ajolma/perl-alien-gdal.git/trunk alien-gdal
   - cd alien-gdal
   - perl Makefile.PL
-  - gmake | perl -ane '$|=1;print "."'
+  - gmake | perl -ane "$|=1;print '.'"
   - gmake install
   - cd ..
   - rd /s /q alien-gdal

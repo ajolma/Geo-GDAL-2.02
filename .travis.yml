@@ -25,7 +25,7 @@ before_install:
 install:
   - cpanm -v --installdeps --notest .
 
-script: "perl Makefile.PL; make; ldd /home/travis/build/ajolma/Geo-GDAL-2.02/blib/arch/auto/Geo/OSR/OSR.so; make test"
+script: "perl Makefile.PL; make; make test"
 
 branches:
   only:

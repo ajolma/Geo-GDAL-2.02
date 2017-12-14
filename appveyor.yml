@@ -25,11 +25,10 @@ install:
   - svn co https://github.com/shawnlaffan/perl-alien-gdal.git/trunk alien-gdal
   - cd alien-gdal
   - SET FORCE_DYNAMIC=1
-  - dir c:\strawberry\perl\bin
-  - dir c:\strawberry\perl\lib
   - dir c:\strawberry\c\bin
   - dir c:\strawberry\c\lib
   - perl Makefile.PL
+  - perl -ane 'print' < Makefile_Geo__GDAL
   - gmake | perl -ane "$|=1;print '.'"
   - gmake install
   - cd ..

@@ -37,9 +37,9 @@ my $PM = {
 };    
 $PM->{'lib/Geo/GNM.pm'} = '$(INST_LIBDIR)/GNM.pm' if $objects->{'Geo::GNM'};
 
-print Dumper \%args;
-
 push @{$args{LIBS}}, '-LC:/strawberry/c/lib -ltiff';
+
+print Dumper \%args;
 
 for my $module (sort keys %$objects) {
     my $add = $module;

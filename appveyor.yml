@@ -20,10 +20,13 @@ install:
   - cpanm --quiet --notest Test::CChecker
   - cpanm --quiet --notest Alien::MSYS
   - cpanm --quiet --notest Alien::patch
+  - cpanm --quiet --notest Data::Dumper
   # install alien gdal
   - svn co https://github.com/shawnlaffan/perl-alien-gdal.git/trunk alien-gdal
   - cd alien-gdal
   - SET FORCE_DYNAMIC=1
+  - dir c:\strawberry\perl\bin
+  - dir c:\strawberry\perl\lib
   - perl Makefile.PL
   - gmake | perl -ane "$|=1;print '.'"
   - gmake install

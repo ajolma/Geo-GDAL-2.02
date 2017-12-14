@@ -2,6 +2,7 @@ use v5.10;
 use Alien::gdal;
 use ExtUtils::MakeMaker;
 use Alien::Base::Wrapper qw( Alien::gdal !export );
+use Data::Dumper;
 
 my %args = Alien::Base::Wrapper->mm_args;
 
@@ -35,6 +36,8 @@ my $PM = {
     'lib/Geo/GDAL/Const.pm' => '$(INST_LIBDIR)/GDAL/Const.pm'
 };    
 $PM->{'lib/Geo/GNM.pm'} = '$(INST_LIBDIR)/GNM.pm' if $objects->{'Geo::GNM'};
+
+print Dumper \%args;
 
 for my $module (sort keys %$objects) {
     my $add = $module;

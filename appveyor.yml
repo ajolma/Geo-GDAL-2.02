@@ -27,6 +27,8 @@ install:
   - SET FORCE_DYNAMIC=1
   - dir c:\strawberry\perl\bin
   - dir c:\strawberry\perl\lib
+  - dir c:\strawberry\c\bin
+  - dir c:\strawberry\c\lib
   - perl Makefile.PL
   - gmake | perl -ane "$|=1;print '.'"
   - gmake install

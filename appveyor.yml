@@ -28,7 +28,6 @@ install:
   - dir c:\strawberry\c\bin
   - dir c:\strawberry\c\lib
   - perl Makefile.PL
-  - perl -ane 'print' < Makefile_Geo__GDAL
   - gmake | perl -ane "$|=1;print '.'"
   - gmake install
   - cd ..
@@ -37,6 +36,7 @@ install:
 
 build_script:
   - perl Makefile.PL
+  - perl -ane 'print' < Makefile_Geo__GDAL
   - gmake
   - gmake test
   #- prove -l

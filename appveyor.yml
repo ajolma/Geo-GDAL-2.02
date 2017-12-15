@@ -10,11 +10,8 @@ install:
   - if not exist "C:\strawberry" choco install strawberryperl --version 5.26.1.1
   - set ST=C:\strawberry
   - set PATH=%ST%\perl\bin;%ST%\perl\site\bin;%ST%\c\bin;%PATH%
-# we're in C:\projects\geo-gdal-2-02
-#  - dir
-#  - dir c:\
-#  - dir c:\projects
-  #  ensure we have some packages that aren't picked up by the install system
+  # we're in C:\projects\geo-gdal-2-02
+  # ensure we have some packages that aren't picked up by the install system
   - cpanm --quiet --notest Alien::Build
   - cpanm --quiet --notest HTML::LinkExtor
   - cpanm --quiet --notest Test::CChecker
@@ -25,19 +22,13 @@ install:
   - svn co https://github.com/shawnlaffan/perl-alien-gdal.git/trunk alien-gdal
   - cd alien-gdal
   - SET FORCE_DYNAMIC=1
-  - dir c:\strawberry\c\bin
-  - dir c:\strawberry\c\lib
   - perl Makefile.PL
   - gmake | perl -ane "$|=1;print '.'"
   - gmake install
   - cd ..
   - rd /s /q alien-gdal
-  - gcc -v
 
 build_script:
   - perl Makefile.PL
-  - perl -ane 'print' < Makefile_Geo__GDAL
   - gmake
   - gmake test
-  #- prove -l
-

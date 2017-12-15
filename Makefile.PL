@@ -4,10 +4,6 @@ use ExtUtils::MakeMaker;
 use Alien::Base::Wrapper qw( Alien::gdal !export );
 use Data::Dumper;
 
-my $libs = [Alien::gdal->libs()];
-print Dumper $libs;
-say STDERR Alien::gdal->dist_dir;
-
 my %args = Alien::Base::Wrapper->mm_args;
 
 # the dep-libs should be in the %args
@@ -27,8 +23,6 @@ if (open(my $fh, "<", $gdal_config)) {
 } else {
     say STDERR "gdal-config not found in Alien share.\nLIBS will be just CONFIG_INST_LIBS from gdal.pc";
 }
-
-print Dumper \%args;
 
 my $objects = { 
     'Geo::GDAL' => 'gdal_wrap.o',

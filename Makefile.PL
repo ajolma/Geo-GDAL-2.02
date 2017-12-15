@@ -37,7 +37,7 @@ my $PM = {
 };    
 $PM->{'lib/Geo/GNM.pm'} = '$(INST_LIBDIR)/GNM.pm' if $objects->{'Geo::GNM'};
 
-push @{$args{LIBS}}, '-LC:/strawberry/c/lib -ltiff';
+$args{LIBS}[0] .= ' -LC:/strawberry/c/lib -lodbc32 -lodbccp32 -lgif -ljpeg -ltiff -lpng -lpq -lz -lpthread  -lws2_32 -lpsapi -lxml2';
 
 print Dumper \%args;
 

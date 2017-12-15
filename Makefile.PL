@@ -4,7 +4,31 @@ use ExtUtils::MakeMaker;
 use Alien::Base::Wrapper qw( Alien::gdal !export );
 use Data::Dumper;
 
+my $libs = [Alien::gdal->libs()];
+print Dumper $libs;
+say STDERR Alien::gdal->dist_dir;
+
 my %args = Alien::Base::Wrapper->mm_args;
+
+# the dep-libs should be in the %args
+# but it is not, so, look into Alien::gdal->dist_dir() . "/bin/gdal-config" if it exists
+# and add CONFIG_DEP_LIBS to $args{LIBS}[0]
+my $gdal_config = Alien::gdal->dist_dir() . "/bin/gdal-config";
+if (open(my $fh, "<", $gdal_config)) {
+    while (<$fh>) {
+        if (/^CONFIG_DEP_LIBS=(.*)/) {
+            my $dep = $1;
+            $dep =~ s/^\"//;
+            $dep =~ s/\"$//;
+            $args{LIBS}[0] .= ' '.$dep;
+        }
+    }
+    close $fh;
+} else {
+    say STDERR "gdal-config not found in Alien share.\nLIBS will be just CONFIG_INST_LIBS from gdal.pc";
+}
+
+print Dumper \%args;
 
 my $objects = { 
     'Geo::GDAL' => 'gdal_wrap.o',
@@ -36,10 +60,6 @@ my $PM = {
     'lib/Geo/GDAL/Const.pm' => '$(INST_LIBDIR)/GDAL/Const.pm'
 };    
 $PM->{'lib/Geo/GNM.pm'} = '$(INST_LIBDIR)/GNM.pm' if $objects->{'Geo::GNM'};
-
-$args{LIBS}[0] .= ' -LC:/strawberry/c/lib -lodbc32 -lodbccp32 -lgif -ljpeg -ltiff -lpng -lpq -lz -lpthread  -lws2_32 -lpsapi -lxml2';
-
-print Dumper \%args;
 
 for my $module (sort keys %$objects) {
     my $add = $module;

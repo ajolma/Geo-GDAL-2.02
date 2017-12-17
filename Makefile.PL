@@ -6,24 +6,6 @@ use Data::Dumper;
 
 my %args = Alien::Base::Wrapper->mm_args;
 
-# the dep-libs should be in the %args
-# but it is not, so, look into Alien::gdal->dist_dir() . "/bin/gdal-config" if it exists
-# and add CONFIG_DEP_LIBS to $args{LIBS}[0]
-my $gdal_config = Alien::gdal->dist_dir() . "/bin/gdal-config";
-if (open(my $fh, "<", $gdal_config)) {
-    while (<$fh>) {
-        if (/^CONFIG_DEP_LIBS=(.*)/) {
-            my $dep = $1;
-            $dep =~ s/^\"//;
-            $dep =~ s/\"$//;
-            $args{LIBS}[0] .= ' '.$dep;
-        }
-    }
-    close $fh;
-} else {
-    say STDERR "gdal-config not found in Alien share.\nLIBS will be just CONFIG_INST_LIBS from gdal.pc";
-}
-
 my $objects = { 
     'Geo::GDAL' => 'gdal_wrap.o',
     'Geo::OGR' => 'ogr_wrap.o',

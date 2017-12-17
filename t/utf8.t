@@ -1,38 +1,60 @@
+use v5.10;
 use strict;
 use warnings;
-use utf8;
 use Scalar::Util 'blessed';
 use Encode qw(encode decode);
-use Test::More tests => 13;
+use Test::More tests => 15;
 BEGIN { use_ok('Geo::GDAL') };
 
-# test utf8 conversion in bindings
-#
-# TODO: Windows filesystem names are in UTF-16.
+# test utf8 conversion in bindings and filenames
+# todo: separate the two tests
 
-binmode STDERR, ":utf8"; # when debugging, we like to see the truth
+# the file tests assume the filenames
+# are cp1252 in windows and utf8 otherwise
 
-my $fn = "Äri"; # filename with a non-ascii character
+my $win = $^O =~ /Win/;
+my $touch = $win ? 'type nul >>' : 'touch';
+my $cp;
 
-my $touch = $^O =~ /Win/ ? 'type nul >>' : 'touch';
+if ($win) {
+    ($cp) = `chcp` =~ /(\d+)/;
+    $cp = 'cp' . $cp;
+    binmode(STDERR, ":encoding($cp)");
+} else {
+    $cp = 'utf8';
+    binmode STDERR, ":utf8";
+}
+
+# a filename with a non-ascii character
+# this file is in encoding utf8
+my $fn = decode utf8 => "Äri";
+
+# in Linux the filenames are in utf8
+# in Windows we use the codepage 1252
+
+$cp = 'cp1252' if $win;
+
+$fn = encode $cp => $fn;
+
+ SKIP: {
+     skip 'because on Windows', 2 if $win;
+     ok(!utf8::is_utf8($fn), "Perl does not know the filename is in utf8");
+     Encode::_utf8_on($fn); # turn the utf8 flag on
+     ok(utf8::is_utf8($fn), "Now Perl knows the filename is in utf8");
+};
 
 system "$touch ./$fn"; # touch it
 
 my $e = -e $fn;
-ok($e, "touch a file"); # and it is there
+ok($e, "After touch, file exists according to Perl"); # and it is there
 
- SKIP: {
-     skip 'because this is a Windows filesystem.', 2 if $^O =~ /Win/;
-     # now use GDAL tools
-     my %files = map {$_=>1} Geo::GDAL::VSIF::ReadDir('./');
-     ok($files{$fn}, "it is there");
-     Geo::GDAL::VSIF::Unlink($fn);
-     $e = -e $fn;
-     ok(!$e, "deleted");
-};
+# now use GDAL tools to check that the file exists
+my %files = map {$_=>1} Geo::GDAL::VSIF::ReadDir('./');
+ok($files{$fn}, "After touch, file exists according to VSIF");
 
-# that works because the variable has utf8 flag set
-ok(utf8::is_utf8($fn), "Perl knows the filename is in utf8");
+Geo::GDAL::VSIF::Unlink($fn);
+$e = -e $fn;
+ok(!$e, "After VSIF Unlink, the file does not exist.");
 
 system "$touch ./$fn"; # touch it again
 
@@ -40,26 +62,37 @@ $fn = "\xC4ri"; # same filename in Perl's internal format
 ok(!utf8::is_utf8($fn), "Perl does not know the filename is in utf8");
 
 $e = -e $fn;
-ok(!$e, "not there?");
-
-$fn = encode("utf8", $fn); # convert from internal format to utf8
-Encode::_utf8_on($fn); # yes, you have utf8 now
-$e = -e $fn;
-ok($e, "yes it is");
+if ($win) {
+    ok($e, "But it does exist to it in Windows.");
+} else {
+    ok(!$e, "Thus it does not exist to it in Linux.");
+}
 
  SKIP: {
-     skip 'because this is a Windows filesystem.', 5 if $^O =~ /Win/;
-     
-     $fn = "\xC4ri"; # internal format, no utf8 flag
-     Geo::GDAL::VSIF::Unlink($fn); # encoding is done in the bindings
+     skip 'because on Windows', 2 if $win;
+     $fn = encode $cp => $fn; # convert from internal format to utf8
+     Encode::_utf8_on($fn); # turn the utf8 flag on
+     ok(utf8::is_utf8($fn), "Now Perl knows the filename is in utf8");
      $e = -e $fn;
-     ok(!$e, "encoding is done in the bindings");
+     ok($e, "An it exists also for it in Linux.");
+};
 
-     system "$touch ./Äri"; # touch it again
-     my %files = map {$_=>$_} Geo::GDAL::VSIF::ReadDir('./');
-     $fn = $files{'Äri'};
-     ok(utf8::is_utf8($fn), "utf8 flag is set in the bindings");
-     
+$fn = "\xC4ri"; # internal format, no utf8 flag
+Geo::GDAL::VSIF::Unlink($fn); # encoding is done in the bindings
+$e = -e $fn;
+ok(!$e, "encoding is done in the bindings");
+
+$fn = decode utf8 => "Äri";
+$fn = encode $cp => $fn;
+system "$touch ./$fn"; # touch it again
+
+for my $fn (Geo::GDAL::VSIF::ReadDir('./')) {
+    ok(utf8::is_utf8($fn), "utf8 flag is set in the bindings");
+    last;
+}
+
+ SKIP: {
+     skip 'because on Windows', 2 if $win;
      system "echo Äri >Äri"; 
      $fn = `cat Äri`;
      chomp($fn);
@@ -68,9 +101,10 @@ ok($e, "yes it is");
          Geo::GDAL::VSIF::Unlink($fn);
      };
      ok($@, "decoding utf8 to utf8 is not a good idea");
+     Encode::_utf8_on($fn); # set utf8 flag on
+};
 
-     Encode::_utf8_on($fn); # yes, you have utf8 now
-     Geo::GDAL::VSIF::Unlink($fn);
-     $e = -e $fn;
-     ok(!$e, "show is over");
-}
+$fn = decode utf8 => "Äri";
+Geo::GDAL::VSIF::Unlink($fn);
+$e = -e $fn;
+ok(!$e, "Deleted the file.");

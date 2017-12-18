@@ -14983,6 +14983,9 @@ XS(SWIG_init) {
     sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1(static_cast< int >(6)));
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
+  
+  UseExceptions();
+  
   SWIG_TypeClientData(SWIGTYPE_p_OSRSpatialReferenceShadow, (void*) "Geo::OSR::SpatialReference");
   SWIG_TypeClientData(SWIGTYPE_p_OSRCoordinateTransformationShadow, (void*) "Geo::OSR::CoordinateTransformation");
   ST(0) = &PL_sv_yes;

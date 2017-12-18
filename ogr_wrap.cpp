@@ -25364,12 +25364,10 @@ XS(SWIG_init) {
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
   
-  
-  /*UseExceptions(); is set by GDAL module */
+  UseExceptions();
   if ( OGRGetDriverCount() == 0 ) {
     OGRRegisterAll();
   }
-  
   
   SWIG_TypeClientData(SWIGTYPE_p_OGRStyleTableShadow, (void*) "Geo::OGR::StyleTable");
   SWIG_TypeClientData(SWIGTYPE_p_OGRLayerShadow, (void*) "Geo::OGR::Layer");
